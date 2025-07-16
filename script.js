@@ -1,6 +1,24 @@
 let timers = {}; // Store interval IDs and remaining time for each timer
 let progressData = JSON.parse(localStorage.getItem('breathwork-progress')) || {}; // { 'YYYY-MM-DD': {morning: bool, midday: bool, evening: bool} }
 
+const guidanceTexts = {
+    'kapalabhati': 'Sit upright with a straight spine. Inhale deeply through your nose, then exhale forcefully in short rapid bursts, pumping your belly. Do twenty to thirty pumps per round. Repeat three to five rounds. Focus on the cleansing energy.',
+    'coherent': 'Breathe at a steady rhythm. Inhale through your nose for five seconds, then exhale for five seconds. Visualize sending compassion to yourself or others on each exhale. Stay relaxed.',
+    'box': 'This is box breathing. Inhale for four seconds, hold for four, exhale for four, hold for four. Repeat five to ten times. Let your mind sharpen with each cycle.',
+    'cyclic': 'For cyclic sighing, inhale deeply through your nose, then take a second short inhale to top off. Follow with a long slow sigh exhale through your mouth. Repeat five to ten cycles. Release tension with each sigh.',
+    'nadi': 'Alternate nostril breathing. Close your right nostril and inhale left for four seconds. Close left, exhale right for four. Inhale right, exhale left. Repeat five to ten cycles. Balance your energy.',
+    'bhramari': 'For four-seven-eight with Bhramari. Inhale quietly for four seconds, hold for seven, exhale with a low hum for eight. Repeat four to eight times. Feel the vibration calm your mind.'
+};
+
+const breatherClasses = {
+    'kapalabhati': 'generic',
+    'coherent': 'coherent',
+    'box': 'box',
+    'cyclic': 'cyclic',
+    'nadi': 'nadi',
+    'bhramari': 'bhramari'
+};
+
 function openTab(tabName) {
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
     document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
@@ -19,12 +37,36 @@ function startTimer(id, duration) {
     }
     updateTimerDisplay(id);
     document.getElementById(`${id}-timer`).classList.add('running');
+    const music = document.getElementById(`${id}-music`);
+    if (music) music.play().catch(() => {});
+    
+    // Activate visualizer
+    const breather = document.getElementById(`${id}-breather`);
+    if (breather) {
+        breather.classList.add('active', breatherClasses[id]);
+    }
+    
+    // Play guided audio if supported
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(guidanceTexts[id]);
+        utterance.rate = 0.9; // Slightly slower for calm
+        utterance.volume = 0.8;
+        speechSynthesis.speak(utterance);
+    }
+    
     timers[id].interval = setInterval(() => {
         timers[id].remaining--;
         updateTimerDisplay(id);
         if (timers[id].remaining <= 0) {
             clearInterval(timers[id].interval);
             document.getElementById(`${id}-timer`).classList.remove('running');
+            if (music) {
+                music.pause();
+                music.currentTime = 0;
+            }
+            if (breather) {
+                breather.classList.remove('active', breatherClasses[id]);
+            }
             document.getElementById('chime').play().catch(() => {}); // Play chime sound
             alert(`Time's up for ${id}!`);
         }
@@ -36,6 +78,10 @@ function pauseTimer(id) {
         clearInterval(timers[id].interval);
         timers[id].interval = null;
         document.getElementById(`${id}-timer`).classList.remove('running');
+        const music = document.getElementById(`${id}-music`);
+        if (music) music.pause();
+        const breather = document.getElementById(`${id}-breather`);
+        if (breather) breather.classList.remove('active', breatherClasses[id]);
     }
 }
 
@@ -45,6 +91,13 @@ function resetTimer(id) {
         timers[id] = null;
         document.getElementById(`${id}-timer`).textContent = '00:00';
         document.getElementById(`${id}-timer`).classList.remove('running');
+        const music = document.getElementById(`${id}-music`);
+        if (music) {
+            music.pause();
+            music.currentTime = 0;
+        }
+        const breather = document.getElementById(`${id}-breather`);
+        if (breather) breather.classList.remove('active', breatherClasses[id]);
     }
 }
 
