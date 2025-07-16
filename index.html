@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breathwork Coach</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Daily Breathwork Routine</h1>
+        <p>Your guide to feeling better, boosting HRV, reducing stress, and personal growth. Practice daily!</p>
+        
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab('morning')">Morning</button>
+            <button class="tab-button" onclick="openTab('midday')">Midday</button>
+            <button class="tab-button" onclick="openTab('evening')">Evening</button>
+        </div>
+        
+        <div id="morning" class="tab-content active">
+            <h2>Morning: Energize and Set Intentions (5-10 min)</h2>
+            <div class="exercise">
+                <h3>1. Kapalabhati Pranayama (2-3 min)</h3>
+                <p>Sit upright. Inhale deeply, then exhale in rapid bursts (20-30 pumps). Repeat 3-5 rounds.</p>
+                <div class="timer" id="kapalabhati-timer">00:00</div>
+                <button onclick="startTimer('kapalabhati', 180)">Start</button>
+                <button onclick="pauseTimer('kapalabhati')">Pause</button>
+                <button onclick="resetTimer('kapalabhati')">Reset</button>
+            </div>
+            <div class="exercise">
+                <h3>2. Coherent Breathing (3-5 min)</h3>
+                <p>Inhale 5s, exhale 5s. Visualize compassion.</p>
+                <div class="timer" id="coherent-timer">00:00</div>
+                <button onclick="startTimer('coherent', 300)">Start</button>
+                <button onclick="pauseTimer('coherent')">Pause</button>
+                <button onclick="resetTimer('coherent')">Reset</button>
+            </div>
+            <p>End with intention: "Today, I breathe in peace and exhale stress."</p>
+        </div>
+        
+        <div id="midday" class="tab-content">
+            <h2>Midday: Stress Alleviation (5-10 min)</h2>
+            <div class="exercise">
+                <h3>1. Box Breathing (2-3 min)</h3>
+                <p>Inhale 4s, hold 4s, exhale 4s, hold 4s. Repeat 5-10 times.</p>
+                <div class="timer" id="box-timer">00:00</div>
+                <button onclick="startTimer('box', 180)">Start</button>
+                <button onclick="pauseTimer('box')">Pause</button>
+                <button onclick="resetTimer('box')">Reset</button>
+            </div>
+            <div class="exercise">
+                <h3>2. Cyclic Sighing (3-5 min)</h3>
+                <p>Deep inhale + short inhale, long sigh exhale. Repeat 5-10 cycles.</p>
+                <div class="timer" id="cyclic-timer">00:00</div>
+                <button onclick="startTimer('cyclic', 300)">Start</button>
+                <button onclick="pauseTimer('cyclic')">Pause</button>
+                <button onclick="resetTimer('cyclic')">Reset</button>
+            </div>
+        </div>
+        
+        <div id="evening" class="tab-content">
+            <h2>Evening: Wind Down and Reflect (5-10 min)</h2>
+            <div class="exercise">
+                <h3>1. Nadi Shodhana (2-3 min)</h3>
+                <p>Alternate nostril breathing: Inhale left 4s, exhale right 4s, etc. 5-10 cycles.</p>
+                <div class="timer" id="nadi-timer">00:00</div>
+                <button onclick="startTimer('nadi', 180)">Start</button>
+                <button onclick="pauseTimer('nadi')">Pause</button>
+                <button onclick="resetTimer('nadi')">Reset</button>
+            </div>
+            <div class="exercise">
+                <h3>2. 4-7-8 with Bhramari (3-5 min)</h3>
+                <p>Inhale 4s, hold 7s, exhale hum 8s. Repeat 4-8 times.</p>
+                <div class="timer" id="bhramari-timer">00:00</div>
+                <button onclick="startTimer('bhramari', 300)">Start</button>
+                <button onclick="pauseTimer('bhramari')">Pause</button>
+                <button onclick="resetTimer('bhramari')">Reset</button>
+            </div>
+            <p>End with reflection: Journal one thing you're grateful for.</p>
+        </div>
+        
+        <div class="progress">
+            <h2>Daily Progress</h2>
+            <label><input type="checkbox" id="morning-check"> Morning Completed</label>
+            <label><input type="checkbox" id="midday-check"> Midday Completed</label>
+            <label><input type="checkbox" id="evening-check"> Evening Completed</label>
+            <button onclick="resetProgress()">Reset Day</button>
+        </div>
+    </div>
+    <audio id="beep" src="https://www.soundjay.com/buttons/beep-07.mp3"></audio> <!-- Free public domain sound -->
+    <script src="script.js"></script>
+</body>
+</html>
