@@ -1,4 +1,5 @@
 let timers = {}; // Store interval IDs and remaining time for each timer
+let progressData = JSON.parse(localStorage.getItem('breathwork-progress')) || {}; // { 'YYYY-MM-DD': {morning: bool, midday: bool, evening: bool} }
 
 function openTab(tabName) {
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
@@ -24,7 +25,7 @@ function startTimer(id, duration) {
         if (timers[id].remaining <= 0) {
             clearInterval(timers[id].interval);
             document.getElementById(`${id}-timer`).classList.remove('running');
-            document.getElementById('beep').play().catch(() => {}); // Handle if audio fails
+            document.getElementById('chime').play().catch(() => {}); // Play chime sound
             alert(`Time's up for ${id}!`);
         }
     }, 1000);
@@ -53,25 +54,96 @@ function updateTimerDisplay(id) {
     document.getElementById(`${id}-timer`).textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
+function getTodayDate() {
+    const today = new Date();
+    return `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
+}
+
+function saveProgress() {
+    const today = getTodayDate();
+    if (!progressData[today]) progressData[today] = {};
+    progressData[today].morning = document.getElementById('morning-check').checked;
+    progressData[today].midday = document.getElementById('midday-check').checked;
+    progressData[today].evening = document.getElementById('evening-check').checked;
+    localStorage.setItem('breathwork-progress', JSON.stringify(progressData));
+    generateCalendar();
+}
+
 function resetProgress() {
+    const today = getTodayDate();
     document.getElementById('morning-check').checked = false;
     document.getElementById('midday-check').checked = false;
     document.getElementById('evening-check').checked = false;
-    localStorage.setItem('morning-check', false);
-    localStorage.setItem('midday-check', false);
-    localStorage.setItem('evening-check', false);
+    progressData[today] = {morning: false, midday: false, evening: false};
+    localStorage.setItem('breathwork-progress', JSON.stringify(progressData));
+    generateCalendar();
 }
 
-// Load progress from localStorage
+function generateCalendar() {
+    const calendar = document.getElementById('calendar');
+    calendar.innerHTML = '';
+    
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
+    
+    // Header
+    const header = document.createElement('div');
+    header.classList.add('calendar-header');
+    header.textContent = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+    calendar.appendChild(header);
+    
+    // Weekdays (optional, but for clarity)
+    ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
+        const dayLabel = document.createElement('div');
+        dayLabel.textContent = day;
+        dayLabel.style.fontWeight = 'bold';
+        calendar.appendChild(dayLabel);
+    });
+    
+    // Empty slots for start of month
+    for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement('div');
+        empty.classList.add('calendar-day', 'empty');
+        calendar.appendChild(empty);
+    }
+    
+    // Days
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+        const dayElem = document.createElement('div');
+        dayElem.classList.add('calendar-day');
+        dayElem.textContent = day;
+        
+        if (progressData[dateStr]) {
+            const sessions = Object.values(progressData[dateStr]).filter(Boolean).length;
+            if (sessions === 3) dayElem.classList.add('complete');
+            else if (sessions > 0) dayElem.classList.add('partial');
+            else dayElem.classList.add('incomplete');
+        } else if (day > now.getDate()) {
+            dayElem.classList.add('empty'); // Future days
+        } else {
+            dayElem.classList.add('incomplete'); // Past days with no data
+        }
+        
+        calendar.appendChild(dayElem);
+    }
+}
+
+// Load progress and generate calendar on load
 window.onload = () => {
-    document.getElementById('morning-check').checked = localStorage.getItem('morning-check') === 'true';
-    document.getElementById('midday-check').checked = localStorage.getItem('midday-check') === 'true';
-    document.getElementById('evening-check').checked = localStorage.getItem('evening-check') === 'true';
+    const today = getTodayDate();
+    if (progressData[today]) {
+        document.getElementById('morning-check').checked = progressData[today].morning || false;
+        document.getElementById('midday-check').checked = progressData[today].midday || false;
+        document.getElementById('evening-check').checked = progressData[today].evening || false;
+    }
+    generateCalendar();
 };
 
-// Save progress on change
+// Save on checkbox change
 document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-    checkbox.addEventListener('change', () => {
-        localStorage.setItem(checkbox.id, checkbox.checked);
-    });
+    checkbox.addEventListener('change', saveProgress);
 });
