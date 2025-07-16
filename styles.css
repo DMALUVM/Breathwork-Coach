@@ -135,6 +135,51 @@ button:hover {
     accent-color: #007bff;
 }
 
+#calendar-container {
+    margin-top: 20px;
+}
+
+#calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    text-align: center;
+}
+
+.calendar-day {
+    padding: 10px;
+    border-radius: 50%;
+    font-weight: bold;
+    cursor: default;
+}
+
+.calendar-day.complete {
+    background-color: #28a745;
+    color: white;
+}
+
+.calendar-day.partial {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.calendar-day.incomplete {
+    background-color: #dc3545;
+    color: white;
+}
+
+.calendar-day.empty {
+    background-color: #e9ecef;
+    color: #6c757d;
+}
+
+.calendar-header {
+    font-weight: bold;
+    color: #007bff;
+    grid-column: span 7;
+    margin-bottom: 10px;
+}
+
 @media (max-width: 600px) {
     .tabs {
         flex-direction: column;
