@@ -23,6 +23,7 @@
                 <h3>1. Kapalabhati Pranayama (2-3 min)</h3>
                 <p>Sit upright. Inhale deeply, then exhale in rapid bursts (20-30 pumps). Repeat 3-5 rounds.</p>
                 <div class="timer" id="kapalabhati-timer">00:00</div>
+                <div class="breather" id="kapalabhati-breather"></div>
                 <button onclick="startTimer('kapalabhati', 180)">Start</button>
                 <button onclick="pauseTimer('kapalabhati')">Pause</button>
                 <button onclick="resetTimer('kapalabhati')">Reset</button>
@@ -31,6 +32,7 @@
                 <h3>2. Coherent Breathing (3-5 min)</h3>
                 <p>Inhale 5s, exhale 5s. Visualize compassion.</p>
                 <div class="timer" id="coherent-timer">00:00</div>
+                <div class="breather" id="coherent-breather"></div>
                 <button onclick="startTimer('coherent', 300)">Start</button>
                 <button onclick="pauseTimer('coherent')">Pause</button>
                 <button onclick="resetTimer('coherent')">Reset</button>
@@ -44,6 +46,7 @@
                 <h3>1. Box Breathing (2-3 min)</h3>
                 <p>Inhale 4s, hold 4s, exhale 4s, hold 4s. Repeat 5-10 times.</p>
                 <div class="timer" id="box-timer">00:00</div>
+                <div class="breather" id="box-breather"></div>
                 <button onclick="startTimer('box', 180)">Start</button>
                 <button onclick="pauseTimer('box')">Pause</button>
                 <button onclick="resetTimer('box')">Reset</button>
@@ -52,6 +55,7 @@
                 <h3>2. Cyclic Sighing (3-5 min)</h3>
                 <p>Deep inhale + short inhale, long sigh exhale. Repeat 5-10 cycles.</p>
                 <div class="timer" id="cyclic-timer">00:00</div>
+                <div class="breather" id="cyclic-breather"></div>
                 <button onclick="startTimer('cyclic', 300)">Start</button>
                 <button onclick="pauseTimer('cyclic')">Pause</button>
                 <button onclick="resetTimer('cyclic')">Reset</button>
@@ -64,6 +68,7 @@
                 <h3>1. Nadi Shodhana (2-3 min)</h3>
                 <p>Alternate nostril breathing: Inhale left 4s, exhale right 4s, etc. 5-10 cycles.</p>
                 <div class="timer" id="nadi-timer">00:00</div>
+                <div class="breather" id="nadi-breather"></div>
                 <button onclick="startTimer('nadi', 180)">Start</button>
                 <button onclick="pauseTimer('nadi')">Pause</button>
                 <button onclick="resetTimer('nadi')">Reset</button>
@@ -72,6 +77,7 @@
                 <h3>2. 4-7-8 with Bhramari (3-5 min)</h3>
                 <p>Inhale 4s, hold 7s, exhale hum 8s. Repeat 4-8 times.</p>
                 <div class="timer" id="bhramari-timer">00:00</div>
+                <div class="breather" id="bhramari-breather"></div>
                 <button onclick="startTimer('bhramari', 300)">Start</button>
                 <button onclick="pauseTimer('bhramari')">Pause</button>
                 <button onclick="resetTimer('bhramari')">Reset</button>
@@ -93,6 +99,12 @@
         </div>
     </div>
     <audio id="chime" src="https://indiemusicbox.s3.amazonaws.com/downloads/meditation-bell-pack/Meditation+Bell+1.mp3"></audio>
+    <audio id="kapalabhati-music" src="music/kapalabhati.mp3" loop></audio>
+    <audio id="coherent-music" src="music/coherent.mp3" loop></audio>
+    <audio id="box-music" src="music/box.mp3" loop></audio>
+    <audio id="cyclic-music" src="music/cyclic.mp3" loop></audio>
+    <audio id="nadi-music" src="music/nadi.mp3" loop></audio>
+    <audio id="bhramari-music" src="music/bhramari.mp3" loop></audio>
     <script src="script.js"></script>
 </body>
 </html>
