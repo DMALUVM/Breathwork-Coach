@@ -52,6 +52,8 @@ function startTimer(id, duration) {
         utterance.rate = 0.9; // Slightly slower for calm
         utterance.volume = 0.8;
         speechSynthesis.speak(utterance);
+    } else {
+        alert('Voice guidance not supported in this browser—try Chrome or Firefox for the full experience.');
     }
     
     timers[id].interval = setInterval(() => {
