@@ -79,6 +79,15 @@ function resetProgress() {
     generateCalendar();
 }
 
+function clearAllProgress() {
+    if (confirm('Are you sure? This will clear all calendar progress history.')) {
+        progressData = {};
+        localStorage.setItem('breathwork-progress', JSON.stringify(progressData));
+        resetProgress(); // Also resets today
+        generateCalendar();
+    }
+}
+
 function generateCalendar() {
     const calendar = document.getElementById('calendar');
     calendar.innerHTML = '';
@@ -95,11 +104,11 @@ function generateCalendar() {
     header.textContent = now.toLocaleString('default', { month: 'long', year: 'numeric' });
     calendar.appendChild(header);
     
-    // Weekdays (optional, but for clarity)
+    // Weekdays
     ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
         const dayLabel = document.createElement('div');
+        dayLabel.classList.add('calendar-weekday');
         dayLabel.textContent = day;
-        dayLabel.style.fontWeight = 'bold';
         calendar.appendChild(dayLabel);
     });
     
