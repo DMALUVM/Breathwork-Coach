@@ -269,6 +269,19 @@
                 height: 80px;
             }
         }
+
+        .duration-input {
+            margin-bottom: 10px;
+        }
+
+        .duration-input label {
+            font-size: 14px;
+        }
+
+        .duration-input input {
+            width: 50px;
+            margin-left: 5px;
+        }
     </style>
 </head>
 <body>
@@ -283,22 +296,24 @@
         
         <div id="morning" class="tab-content active">
             <h2>Morning: Energize and Set Intentions (5-10 min)</h2>
-            <div class="exercise" id="kapalabhati-exercise">
-                <h3>1. Kapalabhati Pranayama (2-3 min)</h3>
-                <p>Sit upright. Inhale deeply, then exhale in rapid bursts (20-30 pumps). Repeat 3-5 rounds. This technique is well-studied in yoga research for increasing alertness and energy levels.</p>
-                <div class="timer" id="kapalabhati-timer">00:00</div>
-                <div class="breather" id="kapalabhati-breather"></div>
-                <button onclick="startTimer('kapalabhati', 180)">Start</button>
-                <button onclick="pauseTimer('kapalabhati')">Pause</button>
-                <button onclick="resetTimer('kapalabhati')">Reset</button>
-                <button onclick="completeExercise('kapalabhati')">Complete</button>
+            <div class="exercise" id="morning1-exercise">
+                <h3 id="morning1-title">1. Kapalabhati Pranayama (2-3 min)</h3>
+                <p id="morning1-desc">Sit upright. Inhale deeply, then exhale in rapid bursts (20-30 pumps). Repeat 3-5 rounds. This technique is well-studied in yoga research for increasing alertness and energy levels.</p>
+                <div class="duration-input"><label>Duration (min): <input type="number" id="morning1-duration" value="3" min="1" max="10"></label></div>
+                <div class="timer" id="morning1-timer">00:00</div>
+                <div class="breather" id="morning1-breather"></div>
+                <button onclick="startTimer('morning1')">Start</button>
+                <button onclick="pauseTimer('morning1')">Pause</button>
+                <button onclick="resetTimer('morning1')">Reset</button>
+                <button onclick="completeExercise('morning1')">Complete</button>
             </div>
             <div class="exercise" id="coherent-exercise">
                 <h3>2. Coherent Breathing (3-5 min)</h3>
                 <p>Inhale 5s, exhale 5s. Visualize compassion. Studies show this improves heart rate variability (HRV) and emotional regulation.</p>
+                <div class="duration-input"><label>Duration (min): <input type="number" id="coherent-duration" value="5" min="1" max="10"></label></div>
                 <div class="timer" id="coherent-timer">00:00</div>
                 <div class="breather" id="coherent-breather"></div>
-                <button onclick="startTimer('coherent', 300)">Start</button>
+                <button onclick="startTimer('coherent')">Start</button>
                 <button onclick="pauseTimer('coherent')">Pause</button>
                 <button onclick="resetTimer('coherent')">Reset</button>
                 <button onclick="completeExercise('coherent')">Complete</button>
@@ -311,9 +326,10 @@
             <div class="exercise" id="nadi-exercise">
                 <h3>1. Nadi Shodhana (2-3 min)</h3>
                 <p>Alternate nostril breathing: Inhale left 4s, exhale right 4s, etc. 5-10 cycles. Research indicates it balances the nervous system and promotes relaxation for better sleep.</p>
+                <div class="duration-input"><label>Duration (min): <input type="number" id="nadi-duration" value="3" min="1" max="10"></label></div>
                 <div class="timer" id="nadi-timer">00:00</div>
                 <div class="breather" id="nadi-breather"></div>
-                <button onclick="startTimer('nadi', 180)">Start</button>
+                <button onclick="startTimer('nadi')">Start</button>
                 <button onclick="pauseTimer('nadi')">Pause</button>
                 <button onclick="resetTimer('nadi')">Reset</button>
                 <button onclick="completeExercise('nadi')">Complete</button>
@@ -321,9 +337,10 @@
             <div class="exercise" id="bhramari-exercise">
                 <h3>2. 4-7-8 with Bhramari (3-5 min)</h3>
                 <p>Inhale 4s, hold 7s, exhale hum 8s. Repeat 4-8 times. This method, popularized by Dr. Andrew Weil, has been shown to reduce anxiety and aid in falling asleep faster.</p>
+                <div class="duration-input"><label>Duration (min): <input type="number" id="bhramari-duration" value="5" min="1" max="10"></label></div>
                 <div class="timer" id="bhramari-timer">00:00</div>
                 <div class="breather" id="bhramari-breather"></div>
-                <button onclick="startTimer('bhramari', 300)">Start</button>
+                <button onclick="startTimer('bhramari')">Start</button>
                 <button onclick="pauseTimer('bhramari')">Pause</button>
                 <button onclick="resetTimer('bhramari')">Reset</button>
                 <button onclick="completeExercise('bhramari')">Complete</button>
@@ -344,7 +361,7 @@
         </div>
     </div>
     <audio id="chime" src="https://indiemusicbox.s3.amazonaws.com/downloads/meditation-bell-pack/Meditation+Bell+1.mp3"></audio>
-    <audio id="kapalabhati-music" src="music/kapalabhati.mp3" loop></audio>
+    <audio id="morning1-music" src="music/kapalabhati.mp3" loop></audio>
     <audio id="coherent-music" src="music/coherent.mp3" loop></audio>
     <audio id="nadi-music" src="music/nadi.mp3" loop></audio>
     <audio id="bhramari-music" src="music/bhramari.mp3" loop></audio>
@@ -353,15 +370,8 @@
         let progressData = JSON.parse(localStorage.getItem('breathwork-progress')) || {}; // { 'YYYY-MM-DD': {morning: bool, evening: bool, completed: {} } }
         let completedExercises = {};
 
-        const guidanceTexts = {
-            'kapalabhati': 'Sit upright with a straight spine. Inhale deeply through your nose, then exhale forcefully in short rapid bursts, pumping your belly. Do twenty to thirty pumps per round. Repeat three to five rounds. Focus on the cleansing energy.',
-            'coherent': 'Breathe at a steady rhythm. Inhale through your nose for five seconds, then exhale for five seconds. Visualize sending compassion to yourself or others on each exhale. Stay relaxed.',
-            'nadi': 'Alternate nostril breathing. Close your right nostril and inhale left for four seconds. Close left, exhale right for four. Inhale right, exhale left. Repeat five to ten cycles. Balance your energy.',
-            'bhramari': 'For four-seven-eight with Bhramari. Inhale quietly for four seconds, hold for seven, exhale with a low hum for eight. Repeat four to eight times. Feel the vibration calm your mind.'
-        };
-
         const breatherClasses = {
-            'kapalabhati': 'generic',
+            'morning1': 'generic',
             'coherent': 'coherent',
             'nadi': 'nadi',
             'bhramari': 'bhramari'
@@ -374,7 +384,14 @@
             document.querySelector(`button[onclick="openTab('${tabName}')"]`).classList.add('active');
         }
 
-        function startTimer(id, duration) {
+        function startTimer(id) {
+            const durationInput = document.getElementById(`${id}-duration`);
+            let duration = parseInt(durationInput.value) * 60;
+            if (isNaN(duration) || duration <= 0) {
+                alert('Please enter a valid duration (1-10 minutes).');
+                return;
+            }
+
             if (timers[id] && timers[id].interval) {
                 clearInterval(timers[id].interval); // Clear if already running
             }
@@ -394,16 +411,6 @@
                 breather.classList.add('active', breatherClasses[id]);
             }
             
-            // Play guided audio if supported
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(guidanceTexts[id]);
-                utterance.rate = 0.9; // Slightly slower for calm
-                utterance.volume = 0.8;
-                speechSynthesis.speak(utterance);
-            } else {
-                alert('Voice guidance not supported in this browser—try Chrome or Firefox for the full experience.');
-            }
-            
             timers[id].interval = setInterval(() => {
                 timers[id].remaining--;
                 updateTimerDisplay(id);
@@ -417,8 +424,6 @@
                     if (breather) {
                         breather.classList.remove('active', breatherClasses[id]);
                     }
-                    document.getElementById('chime').play().catch(() => {}); // Play chime sound
-                    alert(`Time's up for ${id}!`);
                     completeExercise(id); // Automatically complete when timer ends
                 }
             }, 1000);
@@ -470,14 +475,14 @@
         }
 
         function getSessionForExercise(id) {
-            if (['kapalabhati', 'coherent'].includes(id)) return 'morning';
+            if (['morning1', 'coherent'].includes(id)) return 'morning';
             if (['nadi', 'bhramari'].includes(id)) return 'evening';
             return null;
         }
 
         function checkSessionComplete(session) {
             let exercises;
-            if (session === 'morning') exercises = ['kapalabhati', 'coherent'];
+            if (session === 'morning') exercises = ['morning1', 'coherent'];
             else if (session === 'evening') exercises = ['nadi', 'bhramari'];
             else return;
 
@@ -575,8 +580,26 @@
             }
         }
 
+        function setupMorningExercise() {
+            const today = new Date();
+            const day = today.getDate();
+            const isEvenDay = day % 2 === 0;
+            
+            const titleElem = document.getElementById('morning1-title');
+            const descElem = document.getElementById('morning1-desc');
+            
+            if (isEvenDay) {
+                titleElem.textContent = '1. Kapalabhati Pranayama (2-3 min)';
+                descElem.textContent = 'Sit upright. Inhale deeply, then exhale in rapid bursts (20-30 pumps). Repeat 3-5 rounds. This technique is well-studied in yoga research for increasing alertness and energy levels.';
+            } else {
+                titleElem.textContent = '1. Bhastrika Pranayama (2-3 min)';
+                descElem.textContent = 'Sit upright. Inhale and exhale forcefully through the nose in rapid succession (20-30 breaths). Repeat 3-5 rounds. This technique, also known as Breath of Fire, is evidence-based for enhancing vitality and mental clarity.';
+            }
+        }
+
         // Load progress and generate calendar on load
         window.onload = () => {
+            setupMorningExercise();
             const today = getTodayDate();
             if (progressData[today]) {
                 document.getElementById('morning-check').checked = progressData[today].morning || false;
