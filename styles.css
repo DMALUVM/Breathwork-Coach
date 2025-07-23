@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #e8f4fd;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s;
+}
+
+body.dark .container {
+    background: #1e1e1e;
+}
+
+h1, h2, h3 {
+    color: #007bff;
+}
+
+body.dark h1, body.dark h2, body.dark h3 {
+    color: #4da6ff;
+}
+
+/* Rest of your original CSS here, with dark mode adjustments as needed */
+/* For example: */
+.exercise {
+    background: #f9f9f9;
+}
+
+body.dark .exercise {
+    background: #2c2c2c;
+}
+
+.exercise.completed {
+    background: #d4edda;
+    border: 1px solid #28a745;
+}
+
+body.dark .exercise.completed {
+    background: #2e7d32;
+    border: 1px solid #4caf50;
+}
+
+.audio-select {
+    margin-bottom: 10px;
+}
+
+.audio-select select {
+    width: 100%;
+    padding: 5px;
+}
+
+.attribution {
+    font-size: 12px;
+    text-align: center;
+    margin-top: 20px;
+    color: #666;
+}
+
+body.dark .attribution {
+    color: #aaa;
+}
+
+/* Add your breather animations and media queries as before */
