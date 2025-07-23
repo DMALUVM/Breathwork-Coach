@@ -37,10 +37,12 @@ body.dark h1, body.dark h2, body.dark h3 {
     color: #4da6ff;
 }
 
-/* Rest of your original CSS here, with dark mode adjustments as needed */
-/* For example: */
 .exercise {
     background: #f9f9f9;
+    margin-bottom: 25px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
 }
 
 body.dark .exercise {
@@ -55,6 +57,282 @@ body.dark .exercise {
 body.dark .exercise.completed {
     background: #2e7d32;
     border: 1px solid #4caf50;
+}
+
+.timer {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 15px 0;
+    color: #28a745;
+    font-family: monospace;
+    text-align: center;
+    transition: color 0.3s;
+}
+
+.timer.running {
+    color: #ffc107;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.progress {
+    margin-top: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+}
+
+body.dark .progress {
+    background: #1f1f1f;
+}
+
+#calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    text-align: center;
+}
+
+.calendar-header {
+    font-weight: bold;
+    color: #007bff;
+    grid-column: span 7;
+    margin-bottom: 10px;
+}
+
+body.dark .calendar-header {
+    color: #4da6ff;
+}
+
+.calendar-weekday {
+    font-weight: bold;
+    color: #6c757d;
+    text-align: center;
+    padding: 5px 0;
+}
+
+.calendar-day {
+    padding: 10px;
+    border-radius: 50%;
+    font-weight: bold;
+    cursor: default;
+}
+
+.calendar-day.complete {
+    background-color: #28a745;
+    color: white;
+}
+
+.calendar-day.incomplete {
+    background-color: #dc3545;
+    color: white;
+}
+
+.calendar-day.empty {
+    background-color: #e9ecef;
+    color: #6c757d;
+}
+
+body.dark .calendar-day.empty {
+    background-color: #333;
+    color: #888;
+}
+
+.breather {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 15px;
+    background: radial-gradient(circle, #007bff 0%, transparent 70%);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.breather.active {
+    opacity: 0.7;
+}
+
+.breather.generic {
+    animation: genericBreathe 10s infinite ease-in-out;
+}
+
+@keyframes genericBreathe {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(0.8); }
+}
+
+.breather.pursedlip {
+    animation: pursedlipBreathe 6s infinite linear;
+}
+
+@keyframes pursedlipBreathe {
+    0% { transform: scale(0.8); }
+    33% { transform: scale(1.2); }
+    100% { transform: scale(0.8); }
+}
+
+.breather.diaphragmatic {
+    animation: diaphragmaticBreathe 10s infinite linear;
+}
+
+@keyframes diaphragmaticBreathe {
+    0% { transform: scale(0.8); }
+    40% { transform: scale(1.2); }
+    100% { transform: scale(0.8); }
+}
+
+.breather.breathfocus {
+    animation: genericBreathe 10s infinite linear;
+}
+
+.breather.lions {
+    animation: lionsBreathe 5s infinite linear;
+}
+
+@keyframes lionsBreathe {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(0.8); }
+}
+
+.breather.alternatenostril {
+    animation: alternatenostrilBreathe 8s infinite linear;
+}
+
+@keyframes alternatenostrilBreathe {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(0.8); }
+}
+
+.breather.equal {
+    animation: equalBreathe 8s infinite linear;
+}
+
+@keyframes equalBreathe {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(0.8); }
+}
+
+.breather.coherent {
+    animation: coherentBreathe 10s infinite linear;
+}
+
+@keyframes coherentBreathe {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(0.8); }
+}
+
+.breather.sitali {
+    animation: sitaliBreathe 10s infinite linear;
+}
+
+@keyframes sitaliBreathe {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(0.8); }
+}
+
+.breather.deep {
+    animation: deepBreathe 12s infinite linear;
+}
+
+@keyframes deepBreathe {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(0.8); }
+}
+
+.breather.bhramari {
+    animation: bhramariBreathe 10s infinite linear;
+}
+
+@keyframes bhramariBreathe {
+    0% { transform: scale(0.8); }
+    40% { transform: scale(1.2); }
+    100% { transform: scale(0.8); }
+}
+
+.breather.box {
+    animation: boxBreathe 16s infinite linear;
+}
+
+@keyframes boxBreathe {
+    0% { transform: scale(0.8); }
+    25% { transform: scale(1.2); }
+    50% { transform: scale(1.2); }
+    75% { transform: scale(0.8); }
+    100% { transform: scale(0.8); }
+}
+
+.breather.ujjayi {
+    animation: ujjayiBreathe 10s infinite linear;
+}
+
+@keyframes ujjayiBreathe {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(0.8); }
+}
+
+.breather.kapalabhati {
+    animation: kapalabhatiBreathe 2s infinite ease-in-out;
+}
+
+@keyframes kapalabhatiBreathe {
+    0% { transform: scale(1.0); }
+    50% { transform: scale(0.9); }
+    100% { transform: scale(1.0); }
+}
+
+.breather.bhastrika {
+    animation: bhastrikaBreathe 1s infinite ease-in-out;
+}
+
+@keyframes bhastrikaBreathe {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(0.8); }
+}
+
+.breather.wimhof {
+    animation: wimhofBreathe 2s infinite linear;
+}
+
+@keyframes wimhofBreathe {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.5); }
+    100% { transform: scale(0.8); }
+}
+
+.breather.tummo {
+    animation: tummoBreathe 20s infinite linear;
+}
+
+@keyframes tummoBreathe {
+    0% { transform: scale(0.8); }
+    30% { transform: scale(1.2); }
+    70% { transform: scale(1.2); }
+    100% { transform: scale(0.8); }
+}
+
+.breather.holotropic {
+    animation: holotropicBreathe 3s infinite ease-in-out;
+}
+
+@keyframes holotropicBreathe {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(0.8); }
 }
 
 .audio-select {
@@ -77,4 +355,35 @@ body.dark .attribution {
     color: #aaa;
 }
 
-/* Add your breather animations and media queries as before */
+.duration-input, .custom-ratio {
+    margin-bottom: 10px;
+}
+
+button {
+    padding: 10px 16px;
+    margin-right: 8px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+@media (max-width: 600px) {
+    button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .breather {
+        width: 80px;
+        height: 80px;
+    }
+}
