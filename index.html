@@ -413,10 +413,11 @@
     </div>
     <audio id="chime" src="https://indiemusicbox.s3.amazonaws.com/downloads/meditation-bell-pack/Meditation+Bell+1.mp3"></audio>
     <script>
-        let timers = {}; // Store interval IDs and remaining time for each timer
+        let timers = {}; // Store timer states for each id
         let progressData = JSON.parse(localStorage.getItem('breathwork-progress')) || {}; // { 'YYYY-MM-DD': {daily: bool, completed: {} } }
         let completedExercises = {};
         let currentRoutine = null;
+        let wakeLock = null;
 
         const routines = [
             {
@@ -523,6 +524,33 @@
             }
         ];
 
+        async function requestWakeLock() {
+            if ('wakeLock' in navigator) {
+                try {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    wakeLock.addEventListener('release', () => {
+                        console.log('Wake Lock has been released');
+                    });
+                } catch (err) {
+                    console.error(`${err.name}, ${err.message}`);
+                }
+            }
+        }
+
+        function releaseWakeLock() {
+            if (wakeLock !== null) {
+                wakeLock.release().then(() => {
+                    wakeLock = null;
+                });
+            }
+        }
+
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                await requestWakeLock();
+            }
+        });
+
         function getDailyRoutine() {
             const today = new Date();
             const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
@@ -538,42 +566,49 @@
 
         function startTimer(id) {
             const durationInput = document.getElementById(`${id}-duration`);
-            let duration = parseInt(durationInput.value) * 60;
-            if (isNaN(duration) || duration < 600 || duration > 1200) {
+            let duration = parseInt(durationInput.value) * 60 * 1000;
+            if (isNaN(duration) || duration < 600000 || duration > 1200000) {
                 alert('Please enter a valid duration (10-20 minutes).');
                 return;
             }
 
-            if (timers[id] && timers[id].interval) {
+            if (!timers[id]) {
+                timers[id] = {
+                    duration: duration,
+                    elapsed: 0,
+                    startTime: Date.now(),
+                    interval: null
+                };
+            } else if (!timers[id].startTime) {
+                // Resuming from pause
+                timers[id].startTime = Date.now();
+            } else {
+                // Already running
+                return;
+            }
+
+            if (timers[id].interval) {
                 clearInterval(timers[id].interval);
             }
-            if (!timers[id]) {
-                timers[id] = { remaining: duration, interval: null };
-            }
-            updateTimerDisplay(id);
+
             document.getElementById(`${id}-timer`).classList.add('running');
-            
+
             const breather = document.getElementById(`${id}-breather`);
             if (breather && currentRoutine) {
                 breather.classList.add('active', currentRoutine.breatherClass);
             }
-            
+
             timers[id].interval = setInterval(() => {
-                timers[id].remaining--;
                 updateTimerDisplay(id);
-                if (timers[id].remaining <= 0) {
-                    clearInterval(timers[id].interval);
-                    document.getElementById(`${id}-timer`).classList.remove('running');
-                    if (breather) {
-                        breather.classList.remove('active', currentRoutine.breatherClass);
-                    }
-                    completeExercise(id);
-                }
             }, 1000);
+
+            requestWakeLock();
         }
 
         function pauseTimer(id) {
-            if (timers[id] && timers[id].interval) {
+            if (timers[id] && timers[id].startTime) {
+                timers[id].elapsed += Date.now() - timers[id].startTime;
+                timers[id].startTime = null;
                 clearInterval(timers[id].interval);
                 timers[id].interval = null;
                 document.getElementById(`${id}-timer`).classList.remove('running');
@@ -581,6 +616,7 @@
                 if (breather && currentRoutine) {
                     breather.classList.remove('active', currentRoutine.breatherClass);
                 }
+                releaseWakeLock();
             }
         }
 
@@ -594,23 +630,45 @@
                 if (breather && currentRoutine) {
                     breather.classList.remove('active', currentRoutine.breatherClass);
                 }
+                releaseWakeLock();
             }
         }
 
         function updateTimerDisplay(id) {
-            const minutes = Math.floor(timers[id].remaining / 60);
-            const seconds = timers[id].remaining % 60;
+            if (!timers[id]) return;
+
+            let currentElapsed = timers[id].elapsed;
+            if (timers[id].startTime) {
+                currentElapsed += Date.now() - timers[id].startTime;
+            }
+
+            let remainingMs = timers[id].duration - currentElapsed;
+            if (remainingMs <= 0) {
+                remainingMs = 0;
+                clearInterval(timers[id].interval);
+                timers[id].interval = null;
+                document.getElementById(`${id}-timer`).classList.remove('running');
+                const breather = document.getElementById(`${id}-breather`);
+                if (breather && currentRoutine) {
+                    breather.classList.remove('active', currentRoutine.breatherClass);
+                }
+                releaseWakeLock();
+                completeExercise(id);
+            }
+
+            const minutes = Math.floor(remainingMs / 60000);
+            const seconds = Math.floor((remainingMs % 60000) / 1000);
             document.getElementById(`${id}-timer`).textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
 
         function completeExercise(id) {
             if (completedExercises[id]) return;
-            pauseTimer(id);
             document.getElementById('chime').play().catch(() => {});
             alert(`Completed daily routine! Great job!`);
             completedExercises[id] = true;
             document.getElementById(`${id}-exercise`).classList.add('completed');
             checkSessionComplete('daily');
+            releaseWakeLock();
         }
 
         function checkSessionComplete(session) {
