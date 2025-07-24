@@ -169,6 +169,7 @@
 
         .calendar-day.clickable:hover {
             opacity: 0.8;
+            transform: scale(1.1);
         }
 
         .breather {
@@ -755,11 +756,27 @@
         }
 
         function toggleDayCompletion(dateStr) {
-            if (!progressData[dateStr]) {
-                progressData[dateStr] = {daily: false, completed: {}};
+            const date = new Date(dateStr);
+            date.setHours(0, 0, 0, 0);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (date <= today) { // Only allow editing for today and past days
+                if (!progressData[dateStr]) {
+                    progressData[dateStr] = {daily: false, completed: {}};
+                }
+                progressData[dateStr].daily = !progressData[dateStr].daily;
+                if (dateStr === getTodayDate()) {
+                    document.getElementById('daily-check').checked = progressData[dateStr].daily;
+                    completedExercises = progressData[dateStr].completed || {};
+                    if (progressData[dateStr].daily) {
+                        document.getElementById('daily-exercise').classList.add('completed');
+                    } else {
+                        document.getElementById('daily-exercise').classList.remove('completed');
+                    }
+                }
+                saveProgress();
             }
-            progressData[dateStr].daily = !progressData[dateStr].daily;
-            saveProgress();
         }
 
         function generateCalendar() {
