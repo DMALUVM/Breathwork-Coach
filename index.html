@@ -163,6 +163,14 @@
             color: #6c757d;
         }
 
+        .calendar-day.clickable {
+            cursor: pointer;
+        }
+
+        .calendar-day.clickable:hover {
+            opacity: 0.8;
+        }
+
         .breather {
             width: 100px;
             height: 100px;
@@ -407,6 +415,8 @@
             <button onclick="clearAllProgress()">Clear All Progress</button>
             <div id="calendar-container">
                 <h3>Monthly Calendar</h3>
+                <button onclick="prevMonth()">Previous Month</button>
+                <button onclick="nextMonth()">Next Month</button>
                 <div id="calendar"></div>
             </div>
         </div>
@@ -418,6 +428,8 @@
         let completedExercises = {};
         let currentRoutine = null;
         let wakeLock = null;
+        let currentViewedYear;
+        let currentViewedMonth;
 
         const routines = [
             {
@@ -674,8 +686,16 @@
         function checkSessionComplete(session) {
             if (session === 'daily' && completedExercises['daily']) {
                 document.getElementById('daily-check').checked = true;
+                updateTodayProgress();
                 saveProgress();
             }
+        }
+
+        function updateTodayProgress() {
+            const today = getTodayDate();
+            if (!progressData[today]) progressData[today] = {};
+            progressData[today].daily = document.getElementById('daily-check').checked;
+            progressData[today].completed = completedExercises;
         }
 
         function getTodayDate() {
@@ -684,10 +704,6 @@
         }
 
         function saveProgress() {
-            const today = getTodayDate();
-            if (!progressData[today]) progressData[today] = {};
-            progressData[today].daily = document.getElementById('daily-check').checked;
-            progressData[today].completed = completedExercises;
             localStorage.setItem('breathwork-progress', JSON.stringify(progressData));
             generateCalendar();
         }
@@ -696,10 +712,11 @@
             const today = getTodayDate();
             document.getElementById('daily-check').checked = false;
             completedExercises = {};
-            progressData[today] = {daily: false, completed: {}};
-            localStorage.setItem('breathwork-progress', JSON.stringify(progressData));
+            if (progressData[today]) {
+                progressData[today] = {daily: false, completed: {}};
+            }
             document.querySelectorAll('.exercise').forEach(ex => ex.classList.remove('completed'));
-            generateCalendar();
+            saveProgress();
         }
 
         function clearAllProgress() {
@@ -707,8 +724,42 @@
                 progressData = {};
                 localStorage.setItem('breathwork-progress', JSON.stringify(progressData));
                 resetProgress();
-                generateCalendar();
             }
+        }
+
+        function prevMonth() {
+            currentViewedMonth--;
+            if (currentViewedMonth < 0) {
+                currentViewedMonth = 11;
+                currentViewedYear--;
+            }
+            generateCalendar();
+        }
+
+        function nextMonth() {
+            currentViewedMonth++;
+            if (currentViewedMonth > 11) {
+                currentViewedMonth = 0;
+                currentViewedYear++;
+            }
+            const now = new Date();
+            if (currentViewedYear > now.getFullYear() || (currentViewedYear === now.getFullYear() && currentViewedMonth > now.getMonth())) {
+                currentViewedMonth--;
+                if (currentViewedMonth < 0) {
+                    currentViewedMonth = 11;
+                    currentViewedYear--;
+                }
+                return; // Prevent going to future months
+            }
+            generateCalendar();
+        }
+
+        function toggleDayCompletion(dateStr) {
+            if (!progressData[dateStr]) {
+                progressData[dateStr] = {daily: false, completed: {}};
+            }
+            progressData[dateStr].daily = !progressData[dateStr].daily;
+            saveProgress();
         }
 
         function generateCalendar() {
@@ -716,14 +767,14 @@
             calendar.innerHTML = '';
             
             const now = new Date();
-            const year = now.getFullYear();
-            const month = now.getMonth();
+            const year = currentViewedYear;
+            const month = currentViewedMonth;
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const firstDay = new Date(year, month, 1).getDay();
             
             const header = document.createElement('div');
             header.classList.add('calendar-header');
-            header.textContent = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+            header.textContent = new Date(year, month, 1).toLocaleString('default', { month: 'long', year: 'numeric' });
             calendar.appendChild(header);
             
             ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
@@ -745,12 +796,21 @@
                 dayElem.classList.add('calendar-day');
                 dayElem.textContent = day;
                 
-                if (progressData[dateStr] && progressData[dateStr].daily) {
-                    dayElem.classList.add('complete');
-                } else if (day > now.getDate()) {
+                const date = new Date(year, month, day);
+                date.setHours(0, 0, 0, 0);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                if (date > today) {
                     dayElem.classList.add('empty');
                 } else {
-                    dayElem.classList.add('incomplete');
+                    if (progressData[dateStr] && progressData[dateStr].daily) {
+                        dayElem.classList.add('complete');
+                    } else {
+                        dayElem.classList.add('incomplete');
+                    }
+                    dayElem.classList.add('clickable');
+                    dayElem.onclick = () => toggleDayCompletion(dateStr);
                 }
                 
                 calendar.appendChild(dayElem);
@@ -758,6 +818,9 @@
         }
 
         window.onload = () => {
+            const now = new Date();
+            currentViewedYear = now.getFullYear();
+            currentViewedMonth = now.getMonth();
             setDailyRoutine();
             const today = getTodayDate();
             if (progressData[today]) {
@@ -771,7 +834,10 @@
         };
 
         document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checkbox.addEventListener('change', saveProgress);
+            checkbox.addEventListener('change', () => {
+                updateTodayProgress();
+                saveProgress();
+            });
         });
     </script>
 </body>
